@@ -6,3 +6,5 @@ results/*
 *.out
 .ipynb_checkpoints
 figures/*
+.vscode/
+.vscode/*

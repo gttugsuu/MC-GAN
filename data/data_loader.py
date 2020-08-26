@@ -152,9 +152,10 @@ class Data(object):
         else: 
             #randomly remove some of the glyphs in input
             if not self.dict:
-                blank_ind = np.repeat(np.random.permutation(A.size(1)/n_rgb)[0:int(self.blanks*A.size(1)/n_rgb)],n_rgb)
+                dummy = np.random.permutation(int(A.size(1)/n_rgb))[0:int(self.blanks*A.size(1)/n_rgb)]
+                blank_ind = np.repeat(dummy,n_rgb)
             else:
-                file_name = map(lambda x:x.split("/")[-1],AB_paths)
+                file_name = list(map(lambda x:x.split("/")[-1],AB_paths))
                 if len(file_name)>1:
                     raise Exception('batch size should be 1')
                 file_name=file_name[0]
@@ -440,10 +441,12 @@ class DataLoader(BaseDataLoader):
         dict_inds = {}
         test_dict = opt.dataroot+'/test_dict/dict.pkl'
         if opt.phase=='test':
-            if os.path.isfile(test_dict):
-                dict_inds = pickle.load(open(test_dict))
-            else:
-                warnings.warn('Blanks in test data are random. create a pkl file in ~/data_path/test_dict/dict.pkl including predifined random indices')
+            # if os.path.isfile(test_dict):
+            #     dict_inds = pickle.load(open(test_dict))
+                with open(test_dict, 'rb') as handle:
+                    dict_inds = pickle.load(handle, encoding='utf-8')
+        else:
+            warnings.warn('Blanks in test data are random. create a pkl file in ~/data_path/test_dict/dict.pkl including predifined random indices')
 
 
 

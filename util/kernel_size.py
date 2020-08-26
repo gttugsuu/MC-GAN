@@ -31,7 +31,7 @@ if __name__ == '__main__':
         else:
            dilation = 1
         output_dim = conv2d(input_dim, padding, kernel_size, stride, dilation)
-        print "kernel of dim (%s,%s) with stride %s, padding %s, dilation %s has been applied on the input with dim (%s,%s)"%(kernel_size, kernel_size,stride,padding,dilation, input_dim, input_dim)
+        print("kernel of dim (%s,%s) with stride %s, padding %s, dilation %s has been applied on the input with dim (%s,%s)"%(kernel_size, kernel_size,stride,padding,dilation, input_dim, input_dim))
 
     elif conv_type == 'upconv':
         if len(sys.argv) == 7:
@@ -39,5 +39,5 @@ if __name__ == '__main__':
         else:
            output_padding = 0
         output_dim = convTranspose2d(input_dim, padding, kernel_size, stride, output_padding)
-        print "kernel of dim (%s,%s) with stride %s, padding %s, dilation %s has been applied on the input with dim (%s,%s)"%(kernel_size, kernel_size,stride,padding,output_padding, input_dim, input_dim)
-    print " dim of the output feature map is ", output_dim
+        print("kernel of dim (%s,%s) with stride %s, padding %s, dilation %s has been applied on the input with dim (%s,%s)"%(kernel_size, kernel_size,stride,padding,output_padding, input_dim, input_dim))
+    print(" dim of the output feature map is ", output_dim)

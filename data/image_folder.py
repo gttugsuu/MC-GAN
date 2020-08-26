@@ -57,7 +57,7 @@ def font_transform(img,path, rgb_in):
     for j in range(target_size):
         for i in np.arange(0,D_):
             slices += list(target_size * np.arange(i,D_*n_rgb,D_) + j)
-    img = index_select(img,2,LongTensor(slices)).view(target_size,target_size,D_*n_rgb)
+    img = index_select(img,2,LongTensor(slices)).view(target_size, target_size, int(D_*n_rgb))
     img = img.permute(2,0,1)
     return img           
 
@@ -92,9 +92,9 @@ class ImageFolder(data.Dataset):
         path = self.imgs[index]
         img = self.loader(path)
         if self.transform is not None:
-			img = self.transform(img)
-			if (self.font_trans):
-				img = font_transform(img,path, self.rgb)
+            img = self.transform(img)
+            if(self.font_trans):
+                img = font_transform(img, path, self.rgb)
         if self.return_paths:
             return img, path
         else:
