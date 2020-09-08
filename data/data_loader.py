@@ -36,8 +36,6 @@ def normalize_stack(input,val=0.5):
     #print(input.shape)
     return t_normal_stack(input)
 
-
-
 def CreateDataLoader(opt):
     data_loader = None
     if opt.stack:
@@ -48,7 +46,6 @@ def CreateDataLoader(opt):
         data_loader = DataLoader()
     data_loader.initialize(opt)
     return data_loader
-
 
 class FlatData(object):
     def __init__(self, data_loader, data_loader_base, fineSize, max_dataset_size, rgb, dict_test={},base_font=False, blanks=0.7):
@@ -109,9 +106,6 @@ class FlatData(object):
             # misc.imsave('./AA_0.png',AA_)            
 
         return {'A': AA, 'A_paths': AB_paths, 'B':B, 'B_paths':AB_paths}
-
-
-
 
 class Data(object):
     def __init__(self, data_loader, fineSize, max_dataset_size, rgb, dict_test={}, blanks=0.7):
@@ -247,8 +241,6 @@ class PartialData(object):
                     
         return {'A': A, 'A_paths': A_paths, 'B':B, 'B_paths':B_paths, 'A_base':self.A_base}
                       
-
-
 class StackDataLoader(BaseDataLoader):
     """ a subset of the glyphs are observed and being used for transferring style
         train a pix2pix model conditioned on b/w glyphs
@@ -328,10 +320,6 @@ class StackDataLoader(BaseDataLoader):
     def __len__(self):
         return min(len(self.dataset_A), self.opt.max_dataset_size)
 
-
-
-
-
 class PartialDataLoader(BaseDataLoader):
     """ a subset of the glyphs are observed and being used for training stlye
         train a pix2pix model conditioned on b/w glyphs
@@ -345,8 +333,8 @@ class PartialDataLoader(BaseDataLoader):
             # TODO: Scale
             transforms.Resize(opt.loadSize),
             transforms.ToTensor(),
-#             transforms.Normalize((0.5, 0.5, 0.5),
-#                                  (0.5, 0.5, 0.5))
+            # transforms.Normalize((0.5, 0.5, 0.5),
+            #                     (0.5, 0.5, 0.5))
                                  ])
         dic_phase = {'train':'Train', 'test':'Test'}
         # Dataset A
@@ -413,8 +401,6 @@ class PartialDataLoader(BaseDataLoader):
 
     def __len__(self):
         return min(len(self.dataset_A), self.opt.max_dataset_size)
-
-
 
 class DataLoader(BaseDataLoader):
     def initialize(self, opt):
