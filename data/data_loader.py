@@ -28,11 +28,12 @@ def normalize_stack(input,val=0.5):
     #normalize an tensor with arbitrary number of channels:
     # each channel with mean=std=val
     val=0.5
-    len_ = input.size(1)
+    len_ = input.size(0)
     mean = (val,)*len_
     std = (val,)*len_
     t_normal_stack = transforms.Compose([
-        transforms.Normalize(mean,std)])
+        transforms.Normalize(mean, std)])
+    #print(input.shape)
     return t_normal_stack(input)
 
 
@@ -216,7 +217,7 @@ class PartialData(object):
         t_topil = transforms.Compose([
             transforms.ToPILImage()])
         t_scale = transforms.Compose([
-            transforms.Scale(self.loadSize),
+            transforms.Resize(self.loadSize),
             transforms.ToTensor(),
             transforms.Normalize((0.5, 0.5, 0.5),
                                  (0.5, 0.5, 0.5))])
@@ -258,7 +259,7 @@ class StackDataLoader(BaseDataLoader):
         BaseDataLoader.initialize(self, opt)
         transform = transforms.Compose([
             # TODO: Scale
-            transforms.Scale(opt.loadSize),
+            transforms.Resize(opt.loadSize),
             transforms.ToTensor(),
                                  ])
         dic_phase = {'train':'Train', 'test':'Test'}
@@ -342,7 +343,7 @@ class PartialDataLoader(BaseDataLoader):
         BaseDataLoader.initialize(self, opt)
         transform = transforms.Compose([
             # TODO: Scale
-            transforms.Scale(opt.loadSize),
+            transforms.Resize(opt.loadSize),
             transforms.ToTensor(),
 #             transforms.Normalize((0.5, 0.5, 0.5),
 #                                  (0.5, 0.5, 0.5))
@@ -422,10 +423,11 @@ class DataLoader(BaseDataLoader):
         self.fineSize = opt.fineSize
         transform = transforms.Compose([
             # TODO: Scale
-            transforms.Scale(opt.loadSize),
+            transforms.Resize(opt.loadSize),
             transforms.ToTensor(),
             transforms.Normalize((0.5, 0.5, 0.5),
                                  (0.5, 0.5, 0.5))])
+
         # Dataset A
         dataset = ImageFolder(root=opt.dataroot + '/' + opt.phase,
                               transform=transform, return_paths=True, font_trans=(not opt.flat), rgb=opt.rgb,

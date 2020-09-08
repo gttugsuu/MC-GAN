@@ -26,8 +26,6 @@ def weights_init(m):
         m.weight.data.normal_(1.0, 0.02)
         m.bias.data.fill_(0)
 
-
-
 def get_norm_layer(norm_type):
     if norm_type == 'batch':
         norm_layer = functools.partial(nn.BatchNorm2d, affine=True)
@@ -52,8 +50,6 @@ def conv_norm_relu_module(norm_type, norm_layer, input_nc, ngf, kernel_size, pad
 
     return model
 
-
-
 def convTranspose_norm_relu_module(norm_type, norm_layer, input_nc, ngf, kernel_size, padding, stride=1, output_padding=0):
     if norm_type=='batch' or norm_type=='instance':
         model = [nn.ConvTranspose2d(input_nc, ngf,
@@ -62,7 +58,6 @@ def convTranspose_norm_relu_module(norm_type, norm_layer, input_nc, ngf, kernel_
                     nn.ReLU(True)]
 
     return model
-
 
 def define_G_3d(input_nc, output_nc, norm='batch', groups=26, ksize=3,padding=1, gpu_ids=[]):
     
@@ -80,8 +75,6 @@ def define_G_3d(input_nc, output_nc, norm='batch', groups=26, ksize=3,padding=1,
 
     netG_3d.apply(weights_init)
     return netG_3d
-
-
 
 def define_G(input_nc, output_nc, ngf, which_model_netG, norm='batch', use_dropout=False, gpu_ids=[]):
     
@@ -113,7 +106,6 @@ def define_G(input_nc, output_nc, ngf, which_model_netG, norm='batch', use_dropo
     netG.apply(weights_init)
     return netG
 
-
 def define_Enc(input_nc, output_nc, ngf, which_model_netG, norm='batch', use_dropout=False, gpu_ids=[]):
     
     netG = None
@@ -141,8 +133,6 @@ def define_Enc(input_nc, output_nc, ngf, which_model_netG, norm='batch', use_dro
 
     netG.apply(weights_init)
     return netG
-
-
 
 def define_Dec(input_nc, output_nc, ngf, which_model_netG, norm='batch', use_dropout=False, gpu_ids=[]):
     
@@ -172,8 +162,6 @@ def define_Dec(input_nc, output_nc, ngf, which_model_netG, norm='batch', use_dro
     netG.apply(weights_init)
     return netG
 
-
-
 def define_D(input_nc, ndf, which_model_netD,
              n_layers_D=3, norm='batch', use_sigmoid=False, postConv=True, gpu_ids=[]):
     netD = None
@@ -194,7 +182,6 @@ def define_D(input_nc, ndf, which_model_netD,
     netD.apply(weights_init)
     return netD
 
-
 def define_preNet(input_nc, nif=32 ,which_model_preNet='none', norm='batch', gpu_ids=[]):
     preNet = None
     norm_layer = get_norm_layer(norm_type=norm)
@@ -209,9 +196,6 @@ def define_preNet(input_nc, nif=32 ,which_model_preNet='none', norm='batch', gpu
         preNet.apply(weights_init)
     return preNet
 
-
-
-
 def print_network(net):
     num_params = 0
     for param in net.parameters():
@@ -220,8 +204,6 @@ def print_network(net):
     
     
     print('Total number of parameters: %d' % num_params)
-
-
 
 ##############################################################################
 # Classes
@@ -268,8 +250,6 @@ class GANLoss(nn.Module):
         target_tensor = self.get_target_tensor(input, target_is_real)
         return self.loss(input, target_tensor)
 
-
-
 # Defines the first layer of the generator to make different glyphs independent
 # conv3D is used instead of conv2D.
 class ResnetGenerator_3d_conv(nn.Module):
@@ -293,13 +273,10 @@ class ResnetGenerator_3d_conv(nn.Module):
         self.model = nn.Sequential(*model)
 
     def forward(self, input):
-
         if self.gpu_ids and isinstance(input.data, torch.cuda.FloatTensor):
             return nn.parallel.data_parallel(self.model, input, self.gpu_ids)
         else:
-
             return self.model(input)
-
 
 # Defines the decoder that consists of Resnet blocks between a few
 # upsampling operations.
@@ -339,10 +316,6 @@ class ResnetDecoder(nn.Module):
             return nn.parallel.data_parallel(self.model, input, self.gpu_ids)
         else:
             return self.model(input)
-
-
-
-
 
 # Defines the encoder that consists of Resnet blocks between a few
 # downsampling operations.
@@ -427,8 +400,6 @@ class ResnetGenerator(nn.Module):
         else:
             return self.model(input)
 
-
-
 # Define a resnet block
 class ResnetBlock(nn.Module):
     def __init__(self, dim, padding_type, norm_layer, use_dropout, norm_type='batch'):
@@ -462,8 +433,6 @@ class ResnetBlock(nn.Module):
     def forward(self, x):
         out = x + self.conv_block(x)
         return out
-
-
 
 ##Apply a transformation on the input and prediction before feeding into the discriminator
 ## in the conditional case

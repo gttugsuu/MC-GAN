@@ -12,15 +12,12 @@ from torch.autograd import Variable
 import util.util as util
 from util.image_pool import ImagePool
 from .base_model import BaseModel
-# from . import networks
-import networks
+from . import networks
+# import networks
 from scipy import misc
 from torch import index_select, LongTensor
 import random
 import torchvision.transforms as transforms
-
-
-
 
 class StackGANModel(BaseModel):
     def name(self):
@@ -198,7 +195,6 @@ class StackGANModel(BaseModel):
 
             self.num_disc = self.opt.output_nc +1
 
-
     def all2observed(self, tensor_all):
         b,c,m,n = self.real_A0.size()
 
@@ -226,9 +222,6 @@ class StackGANModel(BaseModel):
                 self.fake_B0_init = self.real_A0
             else:
                 self.fake_B0_init = self.fake_B0
-
-
-
                                 
     def forward1(self, inp_grad=False):
         b,c,m,n = self.real_A0.size()
@@ -272,7 +265,6 @@ class StackGANModel(BaseModel):
             real_base_gt = index_select(self.real_base, 0, obs_)
             self.real_base_gt = (Variable(real_base_gt.data, requires_grad=False))
 
-
     def add_noise_disc(self,real):
         #add noise to the discriminator target labels
         #real: True/False? 
@@ -286,11 +278,10 @@ class StackGANModel(BaseModel):
             label = (real)
         return label
             
-                
-    
     # no backprop gradients
     def test(self):
-        self.real_A0 = Variable(self.input_A0, volatile=True)
+        self.real_A0 = self.input_A0
+        # self.real_A0 = Variable(self.input_A0, volatile=True)
 
         if self.opt.conv3d:
             self.real_A0_indep = self.netG_3d.forward(self.real_A0.unsqueeze(2))
@@ -322,19 +313,18 @@ class StackGANModel(BaseModel):
                 real_A1[batch,:,:,:] = inp_orna.data[:,self.out_id[batch]*np.array(self.opt.input_nc_1):(self.out_id[batch]+1)*np.array(self.opt.input_nc_1),:,:]
 
 
-
-        self.real_A1 = Variable(real_A1, volatile=True)
+        self.real_A1 = real_A1
+        # self.real_A1 = Variable(real_A1, volatile=True)
     
         fake_B1_emb = self.netE1.forward(self.real_A1.detach())
         self.fake_B1 = self.netDE1.forward(fake_B1_emb)
         
-        self.real_B1 = Variable(self.input_B0, volatile=True)
-
+        self.real_B1 = self.input_B0
+        # self.real_B1 = Variable(self.input_B0, volatile=True)
 
     #get image paths
     def get_image_paths(self):
         return self.image_paths
-
 
     def prepare_data(self):
         if self.opt.conditional:
@@ -344,7 +334,6 @@ class StackGANModel(BaseModel):
             else:
                 self.first_pair = Variable(self.real_A1.data, requires_grad=False)
                 self.first_pair_gt = Variable(self.real_A1_gt.data,requires_grad=False)
-
 
     def backward_D1(self):
         b,c,m,n = self.fake_B1.size()
@@ -390,7 +379,6 @@ class StackGANModel(BaseModel):
         # Combined loss
         self.loss_D1 = (self.loss_D1_fake + self.loss_D1_real) * 0.5
         self.loss_D1.backward()
-
 
     def backward_G(self, pass_grad, iter):
 
@@ -477,7 +465,6 @@ class StackGANModel(BaseModel):
             for batch in self.obs:
                 self.real_A1_grad[batch,:,:,:] = self.real_A1_gt_s.grad.data[self.id_[batch],:,:,:]
 
-
     def optimize_parameters(self,iter):
         self.forward0()
         self.forward1(inp_grad=True)
@@ -497,7 +484,6 @@ class StackGANModel(BaseModel):
         self.optimizer_E1.step()
         
         self.loss_G_L1 = Variable(torch.zeros(1))
-
 
     def optimize_parameters_Stacked(self,iter):
         self.forward0()
@@ -541,7 +527,6 @@ class StackGANModel(BaseModel):
         if self.opt.conv3d:
             self.optimizer_G_3d.step()
 
-
     def get_current_errors(self):
         return OrderedDict([('G1_GAN', self.loss_G1_GAN.item()),
                 ('G1_L1', self.loss_G1_L1.item()),
@@ -551,7 +536,6 @@ class StackGANModel(BaseModel):
                 ('D1_fake', self.loss_D1_fake.item()),
                 ('G_L1', self.loss_G_L1.item())
         ])
-
 
     def get_current_visuals(self):
         real_A1 = self.real_A1.data.clone()
@@ -588,7 +572,6 @@ class StackGANModel(BaseModel):
         self.save_network(self.netD1, 'D1', label, self.gpu_ids)
         if self.opt.which_model_preNet != 'none':
             self.save_network(self.preNet_A, 'PRE_A', label, gpu_ids=self.gpu_ids)
-
 
     def update_learning_rate(self):
         lrd = self.opt.lr / self.opt.niter_decay

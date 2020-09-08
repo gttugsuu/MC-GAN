@@ -58,7 +58,7 @@ class cGANModel(BaseModel):
                 self.netD = networks.define_D(disc_ch, opt.ndf,
                                              opt.which_model_netD,
                                              opt.n_layers_D, opt.norm, use_sigmoid, gpu_ids=self.gpu_ids)
-        if not self.isTrain or opt.continue_train:
+        if not self.isTrain or opt.continue_train: # for test
             if self.opt.conv3d:
                  self.load_network(self.netG_3d, 'G_3d', opt.which_epoch)
             self.load_network(self.netG, 'G', opt.which_epoch)
@@ -130,12 +130,10 @@ class cGANModel(BaseModel):
             label = (real)
         return label
             
-                
-
-    
     # no backprop gradients
     def test(self):
-        self.real_A = Variable(self.input_A, volatile=True)
+        # self.real_A = Variable(self.input_A, volatile=True)
+        self.real_A = self.input_A
         if self.opt.conv3d:
             self.real_A_indep = self.netG_3d.forward(self.real_A.unsqueeze(2))
             self.fake_B = self.netG.forward(self.real_A_indep.squeeze(2))
@@ -143,12 +141,12 @@ class cGANModel(BaseModel):
         else:
             self.fake_B = self.netG.forward(self.real_A)
             
-        self.real_B = Variable(self.input_B, volatile=True)
+        # self.real_B = Variable(self.input_B, volatile=True)
+        self.real_B = self.input_B
 
     #get image paths
     def get_image_paths(self):
         return self.image_paths
-
     
     def backward_D(self):
         # Fake
@@ -162,8 +160,7 @@ class cGANModel(BaseModel):
         self.real_A_reshaped = self.real_A
         self.real_B_reshaped = self.real_B
 
-        if self.opt.conditional:
-
+        if self.opt.conditional: # True
 
             fake_AB = self.fake_AB_pool.query(torch.cat((self.real_A_reshaped, self.fake_B_reshaped), 1))
             self.pred_fake_patch = self.netD.forward(fake_AB.detach())
@@ -199,7 +196,6 @@ class cGANModel(BaseModel):
         self.loss_D = (self.loss_D_fake + self.loss_D_real) * 0.5
 
         self.loss_D.backward()
-
 
     def backward_G(self):
         # First, G(A) should fake the discriminator
@@ -244,15 +240,12 @@ class cGANModel(BaseModel):
         if self.opt.conv3d:
             self.optimizer_G_3d.step()
         
-    
-
     def get_current_errors(self):
         return OrderedDict([('G_GAN', self.loss_G_GAN.item()),
                 ('G_L1', self.loss_G_L1.item()),
                 ('D_real', self.loss_D_real.item()),
                 ('D_fake', self.loss_D_fake.item())
         ])
-
 
     def get_current_visuals(self):
         real_A = util.tensor2im(self.real_A.data)
@@ -268,7 +261,6 @@ class cGANModel(BaseModel):
         if self.opt.which_model_preNet != 'none':
             self.save_network(self.preNet_A, 'PRE_A', label, gpu_ids=self.gpu_ids)
             
-
     def update_learning_rate(self):
         lrd = self.opt.lr / self.opt.niter_decay
         lr = self.old_lr - lrd
