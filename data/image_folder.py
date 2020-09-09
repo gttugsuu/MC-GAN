@@ -87,8 +87,6 @@ class ImageFolder(data.Dataset):
         self.fineSize=fineSize
         self.loadSize=loadSize
 
-
-   
     def __getitem__(self, index):
         path = self.imgs[index]
         img = self.loader(path)
