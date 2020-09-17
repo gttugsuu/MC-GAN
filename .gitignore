@@ -8,3 +8,5 @@ results/*
 figures/*
 .vscode/
 .vscode/*
+checkpoints*
+results*

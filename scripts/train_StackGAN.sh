@@ -11,7 +11,7 @@
 ## Set Parameters
 #=====================================
 
-DATA=ft29_1
+DATA=ft37_1
 DATASET="../datasets/public_web_fonts/${DATA}/"
 experiment_dir="${DATA}_MCGAN_train"
 base_dir="../datasets/Capitals64/BASE"

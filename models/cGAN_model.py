@@ -16,8 +16,7 @@ from . import networks
 from scipy import misc
 import random
 
-
-
+# class cGANModel(BaseModel):
 class cGANModel(BaseModel):
     def name(self):
         return 'cGANModel'
@@ -62,7 +61,7 @@ class cGANModel(BaseModel):
             if self.opt.conv3d:
                  self.load_network(self.netG_3d, 'G_3d', opt.which_epoch)
             self.load_network(self.netG, 'G', opt.which_epoch)
-            if self.isTrain:
+            if self.isTrain: # for train
                 if opt.which_model_preNet != 'none':
                     self.load_network(self.preNet_A, 'PRE_A', opt.which_epoch)
                 self.load_network(self.netD, 'D', opt.which_epoch)

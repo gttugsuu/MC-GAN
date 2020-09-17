@@ -114,6 +114,9 @@ class DataLoader(BaseDataLoader):
             transforms.Normalize((0.5, 0.5, 0.5),
                                  (0.5, 0.5, 0.5))])
 
+        print('@##########################################################################################')
+        print(opt.dataroot + '/' + opt.phase)
+        exit(0)
         # Dataset A
         dataset = ImageFolder(root=opt.dataroot + '/' + opt.phase,
                               transform=transform, return_paths=True, font_trans=(not opt.flat), rgb=opt.rgb,
@@ -341,7 +344,6 @@ class StackDataLoader(BaseDataLoader):
             batch_size=self.opt.batchSize,
             shuffle=shuffle,
             num_workers=int(self.opt.nThreads))
-
         if opt.base_font:
             
             #Read and apply transformation on the BASE font 
@@ -370,7 +372,7 @@ class StackDataLoader(BaseDataLoader):
         return min(len(self.dataset_A), self.opt.max_dataset_size)
 
 class PartialDataLoader(BaseDataLoader):
-    """ a subset of the glyphs are observed and being used for training stlye
+    """ a subset of the glyphs are observed and being used for training style
         train a pix2pix model conditioned on b/w glyphs
         to generate colored glyphs.
         In the pix2pix model it is simmilar to the unaligned data class.
@@ -387,7 +389,6 @@ class PartialDataLoader(BaseDataLoader):
                                  ])
         dic_phase = {'train':'Train', 'test':'Test'}
         # Dataset A
-        
         dataset_A = ImageFolder(root=opt.dataroot +'A/'+ opt.phase,
                               transform=transform, return_paths=True, rgb=opt.rgb, fineSize=opt.fineSize,
                               loadSize=opt.loadSize, font_trans=False, no_permutation=opt.no_permutation)
