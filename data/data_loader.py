@@ -69,24 +69,25 @@ class Data(object):
         self.iter += 1
         if self.iter > self.max_dataset_size:
             raise StopIteration
+        # get (26, 64, 64) tensor, & original image path
         AB, AB_paths = next(self.data_loader_iter)
-        w_total = AB.size(3)
-        w = int(w_total / 2)
-        h = AB.size(2)
-        w_offset = random.randint(0, max(0, w - self.fineSize - 1))
-        h_offset = random.randint(0, max(0, h - self.fineSize - 1))
-        A = AB[:, :, h_offset:h_offset + self.fineSize,
-               w_offset:w_offset + self.fineSize]
-        B = AB[:, :, h_offset:h_offset + self.fineSize,
-               w_offset:w_offset + self.fineSize]
+        w_total = AB.size(3) # 64
+        w = int(w_total / 2) # 32
+        h = AB.size(2) # 64
+        w_offset = random.randint(0, max(0, w - self.fineSize - 1)) # 0 ~ 0
+        h_offset = random.randint(0, max(0, h - self.fineSize - 1)) # 0 ~ 0
+        A = AB[:, :, h_offset:h_offset + self.fineSize, # 0:64
+               w_offset:w_offset + self.fineSize] # 0:64
+        B = AB[:, :, h_offset:h_offset + self.fineSize, # 0:64
+               w_offset:w_offset + self.fineSize] # 0:64
         n_rgb = 3 if self.rgb else 1
 
         if self.blanks == 0: # 0.7 for train, 0.75 for test
             AA = A.clone()
         else: 
             #randomly remove some of the glyphs in input
-            if not self.dict:
-                dummy = np.random.permutation(int(A.size(1)/n_rgb))[0:int(self.blanks*A.size(1)/n_rgb)]
+            if not self.dict: # True
+                dummy = np.random.permutation(int(A.size(1)/n_rgb))[0:int(self.blanks*A.size(1)/n_rgb)] # 0:int(0.7*26/1)
                 blank_ind = np.repeat(dummy,n_rgb)
             else:
                 file_name = list(map(lambda x:x.split("/")[-1],AB_paths))
@@ -95,11 +96,13 @@ class Data(object):
                 file_name=file_name[0]
                 blank_ind = self.random_dict[file_name][0:int(self.blanks*A.size(1)/n_rgb)]
 
-            rgb_inds = np.tile(range(n_rgb),int(self.blanks*A.size(1)/n_rgb))
+            rgb_inds = np.tile(range(n_rgb),int(self.blanks*A.size(1)/n_rgb)) 
             blank_ind = blank_ind*n_rgb + rgb_inds
+
             AA = A.clone()
             AA.index_fill_(1,LongTensor(list(blank_ind)),1) # Change all values of blank_indices in dimension 1 with value 1.
             
+        # A is few shot alphabet tensor, B is full tensor
         return {'A': AA, 'A_paths': AB_paths, 'B':B, 'B_paths':AB_paths}
           
 class DataLoader(BaseDataLoader):
@@ -116,7 +119,7 @@ class DataLoader(BaseDataLoader):
 
         print('@##########################################################################################')
         print(opt.dataroot + '/' + opt.phase)
-        exit(0)
+        # exit(0)
         # Dataset A
         dataset = ImageFolder(root=opt.dataroot + '/' + opt.phase,
                               transform=transform, return_paths=True, font_trans=(not opt.flat), rgb=opt.rgb,

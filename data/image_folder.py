@@ -41,26 +41,25 @@ def make_dataset(dir):
 def default_loader(path):
     return Image.open(path).convert('RGB')
 
-
-def font_transform(img,path, rgb_in):
+# Convert (3, 64, 1664) to (26, 64, 64)
+def font_transform(img, path, rgb_in):
     n_rgb = img.size()[0]
     target_size = img.size()[1]
     D_ = img.size()[2]/target_size
     # warnings.warn("size, %s %s"%(img.size(),D_))
-    if not rgb_in:
+    if not rgb_in: # True
         img = torch.mean(img,dim=0) #only one of the RGB channels    
-        img = img[None,:,:] #(1,64,64)
+        img = img[None,:,:] #(1,64,1664)
         n_rgb =1
     else:
         img = img.permute(1,0,2).contiguous().view(1,target_size, n_rgb*img.size()[2])
-        
     slices = []
     for j in range(target_size):
         for i in np.arange(0,D_):
             slices += list(target_size * np.arange(i,D_*n_rgb,D_) + j)
     img = index_select(img,2,LongTensor(slices)).view(target_size, target_size, int(D_*n_rgb))
     img = img.permute(2,0,1)
-    return img           
+    return img 
 
 
 class ImageFolder(data.Dataset):

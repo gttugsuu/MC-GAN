@@ -97,8 +97,8 @@ class cGANModel(BaseModel):
             print('-----------------------------------------------')
 
     def set_input(self, input):
-        input_A = input['A']
-        input_B = input['B']        
+        input_A = input['A'] # few shot input
+        input_B = input['B'] # full input
         self.input_A.resize_(input_A.size()).copy_(input_A)
         self.input_B.resize_(input_B.size()).copy_(input_B)
         self.image_paths = input['A_paths']
@@ -165,7 +165,7 @@ class cGANModel(BaseModel):
             self.pred_fake_patch = self.netD.forward(fake_AB.detach())
             self.loss_D_fake = self.criterionGAN(self.pred_fake_patch, label_fake)
             if self.opt.which_model_preNet != 'none':
-                #transform the input
+                # transform the input
                 transformed_AB = self.preNet_A.forward(fake_AB.detach())
                 self.pred_fake = self.netD.forward(transformed_AB)
                 self.loss_D_fake += self.criterionGAN(self.pred_fake, label_fake)
@@ -176,7 +176,7 @@ class cGANModel(BaseModel):
 
         # Real
         label_real = self.add_noise_disc(True)
-        if self.opt.conditional:
+        if self.opt.conditional: # True
             real_AB = torch.cat((self.real_A_reshaped, self.real_B_reshaped), 1)#.detach()
             self.pred_real_patch = self.netD.forward(real_AB)
             self.loss_D_real = self.criterionGAN(self.pred_real_patch, label_real)
