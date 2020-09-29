@@ -41,7 +41,7 @@ def make_dataset(dir):
 def default_loader(path):
     return Image.open(path).convert('RGB')
 
-# Convert (3, 64, 1664) to (26, 64, 64)
+# Convert (3, 64, 1664) to (26, 64, 64) (Slice the font image into character images)
 def font_transform(img, path, rgb_in):
     n_rgb = img.size()[0]
     target_size = img.size()[1]
